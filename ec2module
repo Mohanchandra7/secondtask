@@ -1,0 +1,55 @@
+# modules/ec2/main.tf
+resource "aws_security_group" "jenkins_sg" {
+  name        = "${var.name}-sg"
+  description = "Allow SSH and HTTP/8080 for Jenkins"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_instance" "jenkins" {
+  ami           = var.ami
+  instance_type = var.instance_type
+  subnet_id     = var.subnet_id
+  key_name      = var.key_name
+  security_groups = [aws_security_group.jenkins_sg.name]
+  user_data     = file("${path.module}/../userdata/jenkins_userdata.sh")
+
+  tags = { Name = "${var.name}-jenkins" }
+}
+
+resource "aws_eip" "jenkins_eip" {
+  instance = aws_instance.jenkins.id
+}
+
+# variables.tf
+variable "ami" { type = string }
+variable "instance_type" { type = string }
+variable "key_name" { type = string }
+variable "subnet_id" { type = string }
+variable "vpc_id" { type = string }
+variable "name" { type = string }
+
+# outputs.tf
+output "jenkins_public_ip" {
+  value = aws_eip.jenkins_eip.public_ip
+}
