@@ -21,7 +21,7 @@ chown -R ubuntu:ubuntu /var/jenkins_home
 apt install -y git
 
 # Clone Docker Compose repo
-sudo -u ubuntu git clone https://github.com/<secondtask>/jenkins-docker-compose.git /home/ubuntu/jenkins-docker
+sudo -u ubuntu git clone https://github.com/Mohanchandra7
 cd /home/ubuntu/jenkins-docker
 
 # Launch Jenkins container
