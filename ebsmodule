@@ -1,0 +1,8 @@
+# modules/ebs_snapshot/main.tf
+resource "aws_ebs_snapshot" "jenkins_data_snapshot" {
+  volume_id = var.volume_id
+  description = "Daily snapshot for Jenkins data volume"
+}
+
+# variables.tf
+variable "volume_id" { type = string
